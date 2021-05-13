@@ -1,0 +1,32 @@
+#!/usr/bin/env ruby
+
+require 'rubygems'
+require 'bundler'
+
+Bundler.require(:default)
+PROJECT_ROOT = Pathname(__dir__).expand_path.parent
+$LOAD_PATH.unshift(PROJECT_ROOT.join('lib').to_s)
+
+require 'nys_vac_trac'
+
+valid_locations = NYSVacTrac::Providers.load.locations.map(&:parameterize).map(&:underscore)
+
+if ARGV.include?('--help')
+  puts <<~HELPTEXT
+    Polls the New York State COVID-19 vaccination registration site for available appointments.
+
+    Usage: #{$0} [<location> ...]
+
+    Notifications will be triggered when appointments are available at the specified locations. Valid locations are:
+    #{valid_locations.join(', ')}
+
+  HELPTEXT
+else
+  invalid_locations = ARGV - valid_locations
+  unless invalid_locations.empty?
+    $stderr.puts "Invalid locations specified: #{invalid_locations.join(', ')}"
+    exit 1
+  end
+
+  NYSVacTrac.poll(*ARGV)
+end

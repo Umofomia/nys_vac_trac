@@ -1,0 +1,12 @@
+#!/usr/bin/env ruby
+
+require 'rubygems'
+require 'bundler'
+
+Bundler.require(:default, :development)
+PROJECT_ROOT = Pathname(__dir__).expand_path.parent
+$LOAD_PATH.unshift(PROJECT_ROOT.join('lib').to_s)
+
+require 'nys_vac_trac'
+
+IRB.start
